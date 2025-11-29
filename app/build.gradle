@@ -1,0 +1,127 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.plugin.compose'
+}
+
+// Checks if one or more values in a set
+// of properties in gradle.properties are true
+def isAtLeastOnePropertyTrueForPrefix(String prefix) {
+    def properties = project.properties
+    return properties.any { key, value ->
+        key.startsWith(prefix) && value == 'true'
+    }
+}
+
+// Returns the hexadecimal code of the desired OpenGL version
+// Used to retrieve the code to write in the AndroidManifest.xml
+static def getGLVersionCode(String version) {
+    def versionCodes = [
+            'ES20': '0x00020000',
+            'ES30': '0x00030000',
+            'ES31': '0x00030001',
+            'ES32': '0x00030002'
+    ]
+    if (!versionCodes.containsKey(version)) {
+        throw new IllegalArgumentException("Version '${version}' is not valid. Valid versions are: ${versionCodes.keySet()}")
+    }
+    return versionCodes[version]
+}
+
+android {
+    namespace project.properties['app.application_id']
+    compileSdkVersion 36
+
+    defaultConfig {
+        minSdk 24
+        targetSdkVersion 36
+
+        applicationId project.properties['app.application_id']
+        versionCode Integer.parseInt(project.properties['app.version_code'])
+        versionName project.properties['app.version_name']
+
+        // Defining the application name label (to the resources)
+        resValue "string", "app_name", project.properties['app.name']
+
+        // Generates a build configuration based on the requested features in gradle.properties
+        buildConfigField("boolean", "FEATURE_DISPLAY_KEEP_ON", project.properties['display.keep_on'] ?: "false")
+        buildConfigField("boolean", "FEATURE_DISPLAY_IMMERSIVE", project.properties['display.immersive'] ?: "false")
+        buildConfigField("boolean", "FEATURE_DISPLAY_INTO_CUTOUT", project.properties['display.into_cutout'] ?: "false")
+
+        // Substitution variables for the manifest
+        manifestPlaceholders = [
+            GL_VERSION_CODE: getGLVersionCode(project.properties['gl.version']) ?: "0x00020000",
+            APP_LIB_NAME: project.properties['app.native_library_name'] ?: "raymob",
+            APP_ORIENTATION: project.properties['app.orientation'] ?: "landscape",
+            APP_CATEGORY: project.properties['app.category'] ?: "DEFAULT",
+            REQUIRE_INTERNET: project.properties['requirements.internet'] ?: "false",
+            REQUIRE_VIBRATION: project.properties['requirements.vibration'] ?: "false",
+            REQUIRE_GYROSCOPE: project.properties['requirements.gyroscope'] ?: "false",
+            REQUIRE_ACCELEROMETER: project.properties['requirements.accelerometer'] ?: "false"
+        ]
+
+        // Give to CMake the name of the library
+        externalNativeBuild {
+            cmake {
+                def nativeLibName = project.findProperty('app.native_library_name') ?: 'raymob'
+                def glVersion = project.findProperty('gl.version') ?: 'ES20'
+
+                arguments "-DPLATFORM=Android",
+                          "-DBUILD_EXAMPLES=OFF",
+                          "-DAPP_LIB_NAME=$nativeLibName",
+                          "-DGL_VERSION=$glVersion"
+            }
+        }
+
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            jniDebuggable true
+        }
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            debuggable false
+            jniDebuggable false
+            pseudoLocalesEnabled false
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    externalNativeBuild {
+        cmake {
+            path file('src/main/cpp/CMakeLists.txt')
+            version '4.1.2'
+        }
+    }
+    buildFeatures {
+        buildConfig true
+        viewBinding true
+        compose true
+    }
+    ndkVersion '29.0.14206865'
+    kotlinOptions {
+        jvmTarget = '11'
+    }
+}
+dependencies {
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.10.0'
+    implementation 'androidx.activity:activity-compose:1.12.0'
+    implementation platform('androidx.compose:compose-bom:2024.09.00')
+    implementation 'androidx.compose.ui:ui'
+    implementation 'androidx.compose.ui:ui-graphics'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    implementation 'androidx.compose.material3:material3'
+    androidTestImplementation platform('androidx.compose:compose-bom:2024.09.00')
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
+    debugImplementation 'androidx.compose.ui:ui-test-manifest'
+}
+
+
