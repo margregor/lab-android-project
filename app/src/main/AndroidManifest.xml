@@ -58,7 +58,11 @@ xmlns:tools="http://schemas.android.com/tools">
             android:value="${APP_LIB_NAME}" />
     </activity>
 
-
+    <activity
+        android:name="com.labpwr.labap.KakuroGame"
+        android:exported="false"
+        android:label="@string/title_activity_kakuro_game"
+        android:theme="@style/Theme.Labap" />
 
 </application>
 

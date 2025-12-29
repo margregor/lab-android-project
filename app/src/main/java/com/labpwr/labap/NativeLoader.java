@@ -42,7 +42,8 @@ public class NativeLoader extends NativeActivity {
         super.onCreate(savedInstanceState);
         displayManager = new DisplayManager(this);
         softKeyboard = new SoftKeyboard(this);
-        System.loadLibrary("labap");   // Load your game library (don't change raymob, see gradle.properties)
+        System.loadLibrary("labap");
+        setGameId(getIntent().getIntExtra("GameId", 0));
         View decorView = getWindow().getDecorView();
         decorView.getViewTreeObserver().addOnGlobalLayoutListener(
                 () -> {
@@ -114,5 +115,6 @@ public class NativeLoader extends NativeActivity {
     /** @noinspection JavaJniMissingFunction because it can't read RegisterNatives*/
     private native void onAppStop();
     private native void onWindowResized(int width, int height);
+    private native void setGameId(int id);
 
 }

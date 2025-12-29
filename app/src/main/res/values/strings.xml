@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">libap</string>
+    <string name="title_activity_kakuro_game">KakuroGame</string>
 </resources>

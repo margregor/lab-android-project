@@ -38,6 +38,7 @@ class MainActivity : ComponentActivity() {
                         onClick = {
                             Intent(this@MainActivity, NativeLoader::class.java).apply {
                                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                putExtra("GameId", 1)
                                 startActivity(this)
                             }
                         }
@@ -47,10 +48,25 @@ class MainActivity : ComponentActivity() {
                     Button(
                         modifier = Modifier.padding(1.dp),
                         onClick = {
-
+                            Intent(this@MainActivity, NativeLoader::class.java).apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                putExtra("GameId", 2)
+                                startActivity(this)
+                            }
                         }
                     ) {
                         Text(text = "Game2")
+                    }
+                    Button(
+                        modifier = Modifier.padding(1.dp),
+                        onClick = {
+                            Intent(this@MainActivity, KakuroGame::class.java).apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                startActivity(this)
+                            }
+                        }
+                    ) {
+                        Text(text = "Game3")
                     }
 
                 }
