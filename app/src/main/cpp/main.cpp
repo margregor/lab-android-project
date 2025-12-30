@@ -1,6 +1,6 @@
-#include "raymob.h"
-#include "rlgl.h"
-#include "raymath.h"
+#include <raymob.h>
+#include <rlgl.h>
+#include <raymath.h>
 #include "BirdGame.hpp"
 #include "ObstacleGame.hpp"
 #include <string>
@@ -27,6 +27,20 @@ struct stateUpdater {
 
     void operator()(ObstacleGameState& state) const {
         ObstacleGameRun(windowSize, state);
+    }
+
+    void operator()(std::monostate&) const {}
+};
+
+struct stateCloser {
+    Vector2 windowSize;
+
+    void operator()(BirdGameState& state) const {
+        BirdGameClose(windowSize, state);
+    }
+
+    void operator()(ObstacleGameState& state) const {
+        ObstacleGameClose(windowSize, state);
     }
 
     void operator()(std::monostate&) const {}
@@ -73,6 +87,8 @@ int main()
         if (shouldStop) break;
         EndDrawing();
     }
+
+    std::visit(stateCloser{{0, 0}}, state);
 
     CloseWindow();
 

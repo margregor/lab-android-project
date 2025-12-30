@@ -5,12 +5,24 @@
 #ifndef LABAP_BIRDGAME_HPP
 #define LABAP_BIRDGAME_HPP
 
-#include "raymob.h"
+#include <raymob.h>
+#include <vector>
 
-struct BirdGameState {
-    float angle = 0;
+enum class GameStatus {
+    Running,
+    GameOver
 };
 
-void BirdGameRun(Vector2 windowSize, BirdGameState& state);
+struct BirdGameState {
+    std::vector<Rectangle> pillars;
+    Vector2 birdPosition{NAN, NAN};
+    Texture birdTexture;
+    float birdSpeed;
+    unsigned long long int score;
+    GameStatus status = GameStatus::Running;
+};
+
+void BirdGameRun(const Vector2& windowSize, BirdGameState& state);
+void BirdGameClose(const Vector2& windowSize, BirdGameState& state);
 
 #endif //LABAP_BIRDGAME_HPP

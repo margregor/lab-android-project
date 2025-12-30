@@ -3,8 +3,8 @@
 //
 
 #include "ObstacleGame.hpp"
-#include "rlgl.h"
-#include "raymath.h"
+#include <rlgl.h>
+#include <raymath.h>
 #include <string>
 
 void ObstacleGameRun(Vector2 windowSize, ObstacleGameState& state) {
@@ -26,13 +26,34 @@ void ObstacleGameRun(Vector2 windowSize, ObstacleGameState& state) {
             fontSpacing
     );
 
+    if (!state.acceleratorEnabled)
+    {
+        InitSensorManager();
+        EnableSensor(SENSOR_ACCELEROMETER);
+        EnableSensor(SENSOR_GYROSCOPE);
+        state.acceleratorEnabled = true;
+    }
+
+    auto axes = GetAccelerotmerAxis();
+
+    state.angle -= axes.x;
+    state.angle = fmodf(state.angle, 360);
+
     DrawTextPro(
             GetFontDefault(),
             text.c_str(),
             windowSize*0.5f,
             textMeasure*0.5f,
-            fmodf(--state.angle, 360),
+            state.angle,
             fontSize,
             fontSpacing,
             BLACK);
+}
+
+void ObstacleGameClose(Vector2 windowSize, ObstacleGameState &state) {
+    if (state.acceleratorEnabled)
+    {
+        DisableSensor(SENSOR_ACCELEROMETER);
+        DisableSensor(SENSOR_GYROSCOPE);
+    }
 }

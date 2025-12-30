@@ -5,7 +5,7 @@
 cmake_minimum_required(VERSION 3.22.1)
 
 # Set standards for C and C++
-set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD 23)
 set(CMAKE_CXX_STANDARD 23)
 
 # Set the project name based on the name given on the gradle.properties

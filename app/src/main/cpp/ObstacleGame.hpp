@@ -5,12 +5,14 @@
 #ifndef LABAP_OBSTACLEGAME_HPP
 #define LABAP_OBSTACLEGAME_HPP
 
-#include "raymob.h"
+#include <raymob.h>
 
 struct ObstacleGameState {
     float angle = 0;
+    bool acceleratorEnabled = false;
 };
 
 void ObstacleGameRun(Vector2 windowSize, ObstacleGameState& state);
+void ObstacleGameClose(Vector2 windowSize, ObstacleGameState& state);
 
 #endif //LABAP_OBSTACLEGAME_HPP

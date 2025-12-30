@@ -51,6 +51,7 @@ xmlns:tools="http://schemas.android.com/tools">
         android:launchMode="singleTask"
         android:clearTaskOnLaunch="true"
         android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+        android:screenOrientation="portrait"
         android:exported="false">
 
         <meta-data
