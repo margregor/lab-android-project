@@ -30,7 +30,6 @@ void ObstacleGameRun(Vector2 windowSize, ObstacleGameState& state) {
     {
         InitSensorManager();
         EnableSensor(SENSOR_ACCELEROMETER);
-        EnableSensor(SENSOR_GYROSCOPE);
         state.acceleratorEnabled = true;
     }
 
@@ -54,6 +53,5 @@ void ObstacleGameClose(Vector2 windowSize, ObstacleGameState &state) {
     if (state.acceleratorEnabled)
     {
         DisableSensor(SENSOR_ACCELEROMETER);
-        DisableSensor(SENSOR_GYROSCOPE);
     }
 }

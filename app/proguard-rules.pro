@@ -24,3 +24,6 @@
 -keep class com.labpwr.labap.NativeLoader {
     public <methods>;
 }
+-dontwarn javax.xml.stream.Location
+-dontwarn javax.xml.stream.XMLInputFactory
+-dontwarn javax.xml.stream.XMLStreamReader

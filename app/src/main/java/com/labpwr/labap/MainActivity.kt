@@ -27,12 +27,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             LabapTheme {
                 Column( modifier = Modifier.fillMaxWidth(1f) ) {
-                    Spacer(modifier = Modifier.height(40.dp))
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(1.dp)
-                    )
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(80.dp))
                     Button(
                         modifier = Modifier.padding(1.dp),
                         onClick = {
@@ -60,7 +55,7 @@ class MainActivity : ComponentActivity() {
                     Button(
                         modifier = Modifier.padding(1.dp),
                         onClick = {
-                            Intent(this@MainActivity, KakuroGame::class.java).apply {
+                            Intent(this@MainActivity, KakuroList::class.java).apply {
                                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                 startActivity(this)
                             }
@@ -72,21 +67,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    LabapTheme {
-        Greeting("Android")
     }
 }
