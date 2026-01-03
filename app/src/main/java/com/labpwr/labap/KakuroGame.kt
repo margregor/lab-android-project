@@ -1,5 +1,8 @@
 package com.labpwr.labap
 
+import android.content.ContentValues
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE
 import android.os.Bundle
 import android.util.Log
 import com.gitlab.mvysny.konsumexml.childInt
@@ -258,10 +261,19 @@ fun checkBoard(board: KakuroBoard) : Boolean {
 }
 
 class KakuroGame : ComponentActivity() {
+    lateinit var db : SQLiteDatabase
+
+    override fun onDestroy() {
+        db.close();
+        super.onDestroy()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        db = GameSaveDataDbHelper(this).writableDatabase;
 
         val boardToLoad = intent.getStringExtra("board")
+        val boardId = boardToLoad!!.split('/').last().split(".").first()
         Log.d("KAKURO", "boardToLoad $boardToLoad")
         val text = assets.open(boardToLoad!!)
             .bufferedReader(Charsets.UTF_8)
@@ -271,6 +283,22 @@ class KakuroGame : ComponentActivity() {
             k -> k.child("root") {
                 KakuroBoard.xml(this)
             }
+        }
+
+
+
+        with(db.query("KakuroInputs", arrayOf("x_pos", "y_pos", "value"), "board_id = ?", arrayOf(boardId) , null, null, null)) {
+            while (moveToNext()) {
+                board.rows[getInt(1)].cells[getInt(0)].value.value = getInt(2)
+            }
+            close()
+        }
+
+        with(db.query("KakuroCompletedBoards", arrayOf("board_id"), "board_id = ?", arrayOf(boardId) , null, null, null)) {
+            while (moveToNext()) {
+                board.complete.value = true
+            }
+            close()
         }
 
         enableEdgeToEdge()
@@ -304,7 +332,17 @@ class KakuroGame : ComponentActivity() {
                                             .background(Color.White)
                                             .size(50.dp)
                                             .aspectRatio(1f),
-                                        onClick = { if (!board.complete.value!!) board.selectedCell?.value?.value = i},
+                                        onClick = {
+                                            if (!board.complete.value!!) {
+                                                board.selectedCell?.value?.value = i
+                                                val values = ContentValues()
+                                                values.put("board_id", boardId)
+                                                values.put("x_pos", board.selectedCellX.value)
+                                                values.put("y_pos", board.selectedCellY.value)
+                                                values.put("value", i)
+                                                db.insertWithOnConflict("KakuroInputs", null, values, CONFLICT_REPLACE)
+                                            }
+                                                  },
                                         contentPadding = PaddingValues(0.dp)
                                         ) {
                                                 Text(if (i > 0) i.toString() else "Del")
@@ -316,7 +354,14 @@ class KakuroGame : ComponentActivity() {
                                             .height(50.dp)
                                             .width(75.dp),
                                         onClick = {
-                                            if (!board.complete.value!!) board.complete.value = checkBoard(board)
+                                            if (!board.complete.value!! && checkBoard(board)) {
+                                                board.complete.value = true
+                                                val values = ContentValues()
+                                                values.put("board_id", boardId)
+                                                values.put("width", board.width)
+                                                values.put("height", board.height)
+                                                db.insertWithOnConflict("KakuroCompletedBoards", null, values, CONFLICT_REPLACE)
+                                            }
                                         },
                                         contentPadding = PaddingValues(0.dp)
                                     ) {
@@ -336,7 +381,17 @@ class KakuroGame : ComponentActivity() {
                                                 .background(Color.White)
                                                 .size(50.dp)
                                                 .aspectRatio(1f),
-                                            onClick = { if (!board.complete.value!!) board.selectedCell?.value?.value = i},
+                                            onClick = {
+                                                if (!board.complete.value!!) {
+                                                    board.selectedCell?.value?.value = i
+                                                    val values = ContentValues()
+                                                    values.put("board_id", boardId)
+                                                    values.put("x_pos", board.selectedCellX.value)
+                                                    values.put("y_pos", board.selectedCellY.value)
+                                                    values.put("value", i)
+                                                    db.insertWithOnConflict("KakuroInputs", null, values, CONFLICT_REPLACE)
+                                                }
+                                                      },
                                             contentPadding = PaddingValues(0.dp)
                                         ) {
                                             Text(i.toString())

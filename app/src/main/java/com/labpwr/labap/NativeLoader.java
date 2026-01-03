@@ -24,7 +24,12 @@
 
 package com.labpwr.labap;  // Don't change the package name (see gradle.properties)
 
+import static android.database.sqlite.SQLiteDatabase.CONFLICT_IGNORE;
+import static android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE;
+
 import android.app.NativeActivity;
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.os.Bundle;
@@ -47,7 +52,6 @@ public class NativeLoader extends NativeActivity {
         View decorView = getWindow().getDecorView();
         decorView.getViewTreeObserver().addOnGlobalLayoutListener(
                 () -> {
-                    Log.d("NativeLoaderTag", "WindowResized");
                     onWindowResized(decorView.getWidth(), decorView.getHeight());
                 }
         );
@@ -71,7 +75,6 @@ public class NativeLoader extends NativeActivity {
 
     @Override
     protected void onStart() {
-        Log.d("NativeLoaderTag", "onStart");
         super.onStart();
         if(initCallback) {
             onAppStart();
@@ -80,7 +83,6 @@ public class NativeLoader extends NativeActivity {
 
     @Override
     protected void onResume() {
-        Log.d("NativeLoaderTag", "onResume");
         super.onResume();
         if(initCallback) {
             onAppResume();
@@ -89,7 +91,6 @@ public class NativeLoader extends NativeActivity {
 
     @Override
     protected void onPause() {
-        Log.d("NativeLoaderTag", "onPause");
         super.onPause();
         if(initCallback) {
             onAppPause();
@@ -98,10 +99,8 @@ public class NativeLoader extends NativeActivity {
 
     @Override
     protected void onStop() {
-        Log.d("NativeLoaderTag", "onStopOuter");
         super.onStop();
         if(initCallback){
-            Log.d("NativeLoaderTag", "onStopInner");
             onAppStop();
         }
     }

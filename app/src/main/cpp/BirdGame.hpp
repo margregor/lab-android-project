@@ -7,6 +7,7 @@
 
 #include <raymob.h>
 #include <vector>
+#include <functional>
 
 enum class GameStatus {
     Running,
@@ -20,6 +21,7 @@ struct BirdGameState {
     float birdSpeed;
     unsigned long long int score;
     GameStatus status = GameStatus::Running;
+    std::function<void(std::string, unsigned long long int)>& highscoreUpdater;
 };
 
 void BirdGameRun(const Vector2& windowSize, BirdGameState& state);

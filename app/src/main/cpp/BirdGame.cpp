@@ -33,6 +33,7 @@ void updatePillars(const Vector2& windowSize, BirdGameState &state) {
             if (!addedScore && state.status == GameStatus::Running)
             {
                 state.score++;
+                state.highscoreUpdater("birdGame", state.score);
                 addedScore = true;
             }
         }
@@ -75,7 +76,6 @@ void initialize(const Vector2 &windowSize, BirdGameState &state) {
     }
 
     if (!IsTextureValid(state.birdTexture)) {
-        ChangeDirectory("assets");
         state.birdTexture = LoadTexture("bird.png");
     }
 }

@@ -36,7 +36,13 @@ void ObstacleGameRun(Vector2 windowSize, ObstacleGameState& state) {
     auto axes = GetAccelerotmerAxis();
 
     state.angle -= axes.x;
+    float preModAngle = state.angle;
     state.angle = fmodf(state.angle, 360);
+    if (preModAngle != state.angle) {
+        state.score++;
+        state.highscoreUpdater("obstacleGame", state.score);
+    }
+
 
     DrawTextPro(
             GetFontDefault(),
@@ -44,6 +50,16 @@ void ObstacleGameRun(Vector2 windowSize, ObstacleGameState& state) {
             windowSize*0.5f,
             textMeasure*0.5f,
             state.angle,
+            fontSize,
+            fontSpacing,
+            BLACK);
+    std::string scoreText = "Score: " + std::to_string(state.score);
+    DrawTextPro(
+            GetFontDefault(),
+            scoreText.c_str(),
+            windowSize*0.1f,
+            {0,0},
+            0,
             fontSize,
             fontSpacing,
             BLACK);
