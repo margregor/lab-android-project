@@ -34,7 +34,9 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.os.Bundle;
 import android.view.View;
+import androidx.annotation.Keep;
 
+@Keep
 public class NativeLoader extends NativeActivity {
 
     public DisplayManager displayManager;

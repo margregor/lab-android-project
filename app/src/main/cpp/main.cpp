@@ -55,13 +55,16 @@ int getHighScore(sqlite3* db, const std::string& game_name) {
     std::string sql = "SELECT score FROM Highscores WHERE game_name = '"+game_name+"';";
     int rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
     if (rc != SQLITE_OK) {
+        sqlite3_finalize(stmt);
         TraceLog(LOG_ERROR, "Error reading high score");
         return 0;
     }
+    int ret = 0;
     if (sqlite3_step(stmt) == SQLITE_ROW) {
-        return sqlite3_column_int(stmt, 0);
+        ret = sqlite3_column_int(stmt, 0);
     }
-    return 0;
+    sqlite3_finalize(stmt);
+    return ret;
 }
 
 int main()
@@ -103,10 +106,15 @@ int main()
                     +std::to_string(score)
                     +");"
                 ;
-            int rc = sqlite3_exec(db, sql.c_str(), nullptr, nullptr, nullptr);
+            char* errmsg;
+            int rc = sqlite3_exec(db, sql.c_str(), nullptr, nullptr, &errmsg);
             if (rc != SQLITE_OK) {
-                TraceLog(LOG_ERROR, "Error updating highscore");
+                TraceLog(LOG_ERROR, "Error updating highscore %d", rc);
+                if (errmsg)
+                    TraceLog(LOG_ERROR, errmsg);
             }
+            if (errmsg)
+                sqlite3_free(errmsg);
         }
     };
 
@@ -143,6 +151,7 @@ int main()
     std::visit(stateCloser{{0, 0}}, state);
 
     if (db) {
+        TraceLog(LOG_INFO, "Closing Database");
         sqlite3_close(db);
     }
 
